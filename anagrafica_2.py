@@ -1,5 +1,8 @@
 import pandas as pd
+import numpy as np
 import io
+from dizionari import *
+
 conv_sc={
     "Nubile":1,
     "Celibe":1,
@@ -20,17 +23,62 @@ conv_sc={
 
 df=pd.read_excel("Anagrafica.xlsx")
 
+
 def crea_questionario(df,estratto_conto):
+    doc_dict = {
+    '0.1': 'Carta d\'identita\'',
+    '0.2': 'Carta d\'identita\'',
+    '0.3': 'Carta d\'identita\'',
+    '0.5': 'Carta d\'identita\'',
+    '0.6': 'Modello 730',
+    '1.1': 'Estratto conto',
+    '1.2': 'Estratto conto',
+    '1.4': 'Istruzione e Impiego',
+    '1.5': 'Estratto conto',
+    '1.6.1': 'Estratto conto',
+    '1.6.2': 'Estratto conto',
+    '1.6.3': 'Estratto conto',
+    '1.6.4': 'Estratto conto',
+    '1.6.5': 'Estratto conto',
+    "1.6.6": 'Estratto conto',
+    '1.6.7': 'Estratto conto',
+    '1.6.8': 'Estratto conto',
+    '1.6.9': 'Estratto conto',
+    '1.7.1': 'Estratto conto',
+    '1.7.2': 'Estratto conto',
+    '1.7.3': 'Estratto conto',
+    '1.7.4': 'Estratto conto',
+    '1.7.5': 'Estratto conto',
+    '1.7.6': 'Estratto conto',
+    '1.8': 'Estratto conto',
+    '2.1': 'Estratto conto',
+    '2.2': 'Estratto conto',
+    '2.3': 'Estratto conto',
+    '2.4': 'Estratto conto',
+    '2.5': 'Estratto conto',
+    '2.6': 'Estratto conto',
+    '2.7': 'Estratto conto',
+    '2.8': 'Estratto conto',
+    '2.9': 'Estratto conto',
+    '2.10': 'Modello 730',
+}
+
     x,y=df.shape
     vett_anagrafica=[]  
     anagrafica = pd.read_excel("2000503 - QUESTIONARIO PF clean.xlsx")
-    confidence=[100,100,100,20,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,40,10,10,60,60,60,10]
+    confidence=[100,100,100,10,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,40,10,10,60,60,60,10]
     gamma=0
 
     for i in range(x):
         vett_anagrafica.append(anagrafica.copy())
-        
+        vett_anagrafica[i]["Unnamed: 0"]=vett_anagrafica[i]["Unnamed: 0"].astype(str)
         vett_anagrafica[i].rename(columns={"Unnamed: 8":"Livello di Confidence"},inplace=True)
+        vett_anagrafica[i].rename(columns={"Unnamed: 0":"Sezione"},inplace=True)
+        vett_anagrafica[i].rename(columns={"Unnamed: 1":"Domanda"},inplace=True)
+        vett_anagrafica[i]["Sezione"]=vett_anagrafica[i]["Sezione"].astype(str)
+        vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Origine', value=None)
+        vett_anagrafica[i].to_excel("prova.xlsx")
+        
         vett_anagrafica[i]["Risposta 1"][1]=df["COGNOME"][i]
         vett_anagrafica[i]["Livello di Confidence"][1]=confidence[gamma]
         gamma+=1
@@ -45,18 +93,7 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Risposta "+str(conv_sc[df["STATO CIVILE"][i]])][5]="X-"+vett_anagrafica[i]["Risposta "+str(conv_sc[df["STATO CIVILE"][i]])][5]
         vett_anagrafica[i]["Livello di Confidence"][5]=confidence[gamma]
         gamma+=1
-        if df["N. FAMILIARI A CARICO"][i]==0:
-            n_ris="1"
-        elif df["N. FAMILIARI A CARICO"][i]==1:
-            n_ris="2"
-        elif df["N. FAMILIARI A CARICO"][i]==2:
-            n_ris="2"
-        elif df["N. FAMILIARI A CARICO"][i]==3:
-            n_ris="3"
-        elif df["N. FAMILIARI A CARICO"][i]==4:
-            n_ris="3"
-        else:
-            n_ris="4"
+        
             
         if df["COMPONENTI NUCLEO FAMILIARE"][i]==0 or df["COMPONENTI NUCLEO FAMILIARE"][i]==1:
             vett_anagrafica[i]["Risposta 1"][6]="X-"+vett_anagrafica[i]["Risposta 1"][6]
@@ -90,16 +127,24 @@ def crea_questionario(df,estratto_conto):
         
         stipendio=estratto_conto["Entrate"].to_list()[a]
         if a!=0:
+            print(vett_anagrafica[i]["Sezione"][8])
+            
+            vett_anagrafica[i]["Origine"][8]=doc_dict[str(vett_anagrafica[i]["Sezione"][8])]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][8]=doc_dict[vett_anagrafica[i]["Sezione"][8]]
             n_ris="2"
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][8])
         vett_anagrafica[i]["Risposta "+n_ris][8]="X-"+vett_anagrafica[i]["Risposta "+n_ris][8]
         vett_anagrafica[i]["Livello di Confidence"][8]=confidence[gamma]
         gamma+=1
         if aa!=0:
+            vett_anagrafica[i]["Origine"][9]=doc_dict[vett_anagrafica[i]["Sezione"][9]]+" a riga "+str(aa+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][9]=doc_dict[vett_anagrafica[i]["Sezione"][9]]
             n_ris="2"
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][9])
         vett_anagrafica[i]["Risposta "+n_ris][9]="X-"+vett_anagrafica[i]["Risposta "+n_ris][9]
         vett_anagrafica[i]["Livello di Confidence"][9]=confidence[gamma]
         gamma+=1
@@ -129,9 +174,12 @@ def crea_questionario(df,estratto_conto):
                 a=j+1
                 break
         if a!=0:
+            vett_anagrafica[i]["Origine"][12]=doc_dict[vett_anagrafica[i]["Sezione"][12]]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][12]=doc_dict[vett_anagrafica[i]["Sezione"][12]]
             n_ris="2"
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][12])
         vett_anagrafica[i]["Risposta "+n_ris][12]="X-"+vett_anagrafica[i]["Risposta "+n_ris][12]
         vett_anagrafica[i]["Livello di Confidence"][12]=confidence[gamma]
         gamma+=1
@@ -148,13 +196,17 @@ def crea_questionario(df,estratto_conto):
                     break
         
         if df["TITOLO DI STUDIO"][i].find("Laurea")>=0 and a!=0:
+            vett_anagrafica[i]["Origine"][14]=doc_dict[vett_anagrafica[i]["Sezione"][14]]+" a riga "+str(a+1)
+           
             n_ris="1"
-            vett_anagrafica[i]["Risposta "+n_ris][14]="X-"+vett_anagrafica[i]["Risposta "+n_ris][14]
+            
         else:
+            vett_anagrafica[i]["Origine"][14]=doc_dict[vett_anagrafica[i]["Sezione"][14]]
             n_ris = "2"
-            vett_anagrafica[i]["Risposta "+n_ris][14]="X-"+vett_anagrafica[i]["Risposta "+n_ris][14] 
+        vett_anagrafica[i]["Risposta "+n_ris][14]="X-"+vett_anagrafica[i]["Risposta "+n_ris][14] 
         vett_anagrafica[i]["Livello di Confidence"][14]=confidence[gamma]
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][14])
         
         ####risposta 1.6.2
         #Strumenti Obbligazionari: Nel confronto tra un titolo obbligazionario di un Emittente a basso rischio ed un titolo obbligazionario 
@@ -169,8 +221,12 @@ def crea_questionario(df,estratto_conto):
                     a=j+1
                     break
         if a!=0:
+            vett_anagrafica[i]["Origine"][15]=doc_dict[vett_anagrafica[i]["Sezione"][15]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Origine"][16]=doc_dict[vett_anagrafica[i]["Sezione"][16]]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][15]=doc_dict[vett_anagrafica[i]["Sezione"][15]]
+            vett_anagrafica[i]["Origine"][16]=doc_dict[vett_anagrafica[i]["Sezione"][16]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][15]="X-"+vett_anagrafica[i]["Risposta "+n_ris][15]
         vett_anagrafica[i]["Livello di Confidence"][15]=confidence[gamma]
@@ -178,7 +234,8 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Risposta "+n_ris][16]="X-"+vett_anagrafica[i]["Risposta "+n_ris][16]
         vett_anagrafica[i]["Livello di Confidence"][16]=confidence[gamma]
         gamma+=1
-    
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][15])
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][16])
         ####risposta 1.6.4
         #Strumenti Azionari: Le azioni, a causa dei cambiamenti delle condizioni generali di mercato (rischio sistemico) e/o 
         #della diffusione di informazioni relative alle singole società emittenti (rischio speciﬁco) possono subire una variazione anche signiﬁcativa e repentina dei prezzi
@@ -190,12 +247,15 @@ def crea_questionario(df,estratto_conto):
                     a=j+1
                     break
         if a!=0:
+            vett_anagrafica[i]["Origine"][17]=doc_dict[vett_anagrafica[i]["Sezione"][17]]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][17]=doc_dict[vett_anagrafica[i]["Sezione"][17]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][17]="X-"+vett_anagrafica[i]["Risposta "+n_ris][17]
         vett_anagrafica[i]["Livello di Confidence"][17]=confidence[gamma] 
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][17])
         # vett_anagrafica[i]["Risposta "+n_ris][17]="X-"+vett_anagrafica[i]["Risposta "+n_ris][17]
     
         
@@ -209,8 +269,12 @@ def crea_questionario(df,estratto_conto):
                     a=j+1
                     break
         if a!=0:
+            vett_anagrafica[i]["Origine"][18]=doc_dict[vett_anagrafica[i]["Sezione"][18]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Origine"][19]=doc_dict[vett_anagrafica[i]["Sezione"][19]]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][18]=doc_dict[vett_anagrafica[i]["Sezione"][18]]
+            vett_anagrafica[i]["Origine"][19]=doc_dict[vett_anagrafica[i]["Sezione"][19]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][18]="X-"+vett_anagrafica[i]["Risposta "+n_ris][18]
         vett_anagrafica[i]["Livello di Confidence"][18]=confidence[gamma]
@@ -218,6 +282,8 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Risposta "+n_ris][19]="X-"+vett_anagrafica[i]["Risposta "+n_ris][19]
         vett_anagrafica[i]["Livello di Confidence"][19]=confidence[gamma]
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][18])
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][19])  
         ####risposta 1.6.6
         #OICVM (Fondi Armonizzati): Il rischio di un OICVM può differire sensibilmente in funzione della strategia di investimento 
         #adottata dal gestore (a scadenza breve o medio-lunga, denominati in Euro o in altre valute, etc.)
@@ -233,13 +299,15 @@ def crea_questionario(df,estratto_conto):
                     a=j+1
                     break
         if a!=0:
+            vett_anagrafica[i]["Origine"][20]=doc_dict[vett_anagrafica[i]["Sezione"][20]]+" a riga "+str(a+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][20]=doc_dict[vett_anagrafica[i]["Sezione"][20]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][20]="X-"+vett_anagrafica[i]["Risposta "+n_ris][20]
         vett_anagrafica[i]["Livello di Confidence"][20]=confidence[gamma]
         gamma+=1
-        
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][20])
         
         ####risposta 1.6.8
         #Prodotti Alternativi di Investimento: I Fondi di Private Equity investono nel capitale di rischio di aziende normalmente non quotate per 
@@ -271,13 +339,15 @@ def crea_questionario(df,estratto_conto):
         
         
         if b!=0:
+            vett_anagrafica[i]["Origine"][24]=doc_dict[vett_anagrafica[i]["Sezione"][24]]+" a riga "+str(b+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][24]=doc_dict[vett_anagrafica[i]["Sezione"][24]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][24]="X-"+vett_anagrafica[i]["Risposta "+n_ris][24]
         vett_anagrafica[i]["Livello di Confidence"][24]=confidence[gamma]
         gamma+=1
-        
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][24])
 
 
         ####risposta 1.7.2 Ha effettuato negli ultimi 5 anni investimenti nei seguenti prodotti/servizi Strumenti Obbligazionari
@@ -289,13 +359,15 @@ def crea_questionario(df,estratto_conto):
         
         
         if c!=0:
+            vett_anagrafica[i]["Origine"][25]=doc_dict[vett_anagrafica[i]["Sezione"][25]]+" a riga "+str(c+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][25]=doc_dict[vett_anagrafica[i]["Sezione"][25]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][25]="X-"+vett_anagrafica[i]["Risposta "+n_ris][25]
         vett_anagrafica[i]["Livello di Confidence"][25]=confidence[gamma]
         gamma+=1
-
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][25])
         ####risposta 1.7.3 Ha effettuato negli ultimi 5 anni investimenti nei seguenti prodotti/servizi Strumenti Azionari
         d=0
         for j in range(len(descrizione)):
@@ -305,12 +377,15 @@ def crea_questionario(df,estratto_conto):
         
         stipendio=estratto_conto["Entrate"].to_list()[d]
         if d!=0:
+            vett_anagrafica[i]["Origine"][26]=doc_dict[vett_anagrafica[i]["Sezione"][26]]+" a riga "+str(d+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][26]=doc_dict[vett_anagrafica[i]["Sezione"][26]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][26]="X-"+vett_anagrafica[i]["Risposta "+n_ris][26]
         vett_anagrafica[i]["Livello di Confidence"][26]=confidence[gamma]
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][26])
         
 
         ####risposta 1.7.4 Ha effettuato negli ultimi 5 anni investimenti nei seguenti prodotti/servizi OICVM (Fondi Armonizzati)
@@ -322,12 +397,15 @@ def crea_questionario(df,estratto_conto):
         
         stipendio=estratto_conto["Entrate"].to_list()[e]
         if e!=0:
+            vett_anagrafica[i]["Origine"][27]=doc_dict[vett_anagrafica[i]["Sezione"][27]]+" a riga "+str(e+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][27]=doc_dict[vett_anagrafica[i]["Sezione"][27]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][27]="X-"+vett_anagrafica[i]["Risposta "+n_ris][27]
         vett_anagrafica[i]["Livello di Confidence"][27]=confidence[gamma]
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][27])
 
         ####risposta 1.7.5 Ha effettuato negli ultimi 5 anni investimenti nei seguenti prodotti/servizi Prodotti di Investimento Assicurativi
         f=0
@@ -338,13 +416,15 @@ def crea_questionario(df,estratto_conto):
         
         stipendio=estratto_conto["Entrate"].to_list()[f]
         if f!=0:
+            vett_anagrafica[i]["Origine"][28]=doc_dict[vett_anagrafica[i]["Sezione"][28]]+" a riga "+str(f+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][28]=doc_dict[vett_anagrafica[i]["Sezione"][28]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][28]="X-"+vett_anagrafica[i]["Risposta "+n_ris][28]
         vett_anagrafica[i]["Livello di Confidence"][28]=confidence[gamma]
         gamma+=1  
-
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][28])
         ####risposta 1.7.6 Ha effettuato negli ultimi 5 anni investimenti nei seguenti prodotti/servizi Prodotti Alternativi di Investimento
         g=0
         for j in range(len(descrizione)):
@@ -354,12 +434,15 @@ def crea_questionario(df,estratto_conto):
         
         stipendio=estratto_conto["Entrate"].to_list()[g]
         if  g!=0:
+            vett_anagrafica[i]["Origine"][29]=doc_dict[vett_anagrafica[i]["Sezione"][29]]+" a riga "+str(g+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][29]=doc_dict[vett_anagrafica[i]["Sezione"][29]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][29]="X-"+vett_anagrafica[i]["Risposta "+n_ris][29]
         vett_anagrafica[i]["Livello di Confidence"][29]=confidence[gamma]
         gamma+=1
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][29])
 
         vett=["fondo","azioni","btp","obbligazioni","fondo monetario","polizza","fondo private equity"]
         ####risposta 1.8 Con quale frequenza ha effettuato operazioni negli strumenti e nei servizi di investimento negli ultimi 5 anni?
@@ -463,6 +546,7 @@ def crea_questionario(df,estratto_conto):
                     if descrizione.iloc[j].lower().find(k)>0:
                         alpha+=estratto_conto["Entrate"].to_list()[j]
         alpha=alpha*4
+        
         if alpha<50000:
             n_ris="1"
         elif alpha<150000:
@@ -478,20 +562,23 @@ def crea_questionario(df,estratto_conto):
         gamma+=1
         ####risposta 2.5 I suoi investimenti immobiliari:
         ##da definire in base al lavoro e al conto corrente in base a che tasse paga
-        y=0
+        y=-1
         for j in range(len(descrizione)):
             if descrizione.iloc[j].lower().find("imu")>0 or descrizione.iloc[j].lower().find("mutuo")>0:
                 y=j
                 break
         
         stipendio=estratto_conto["Uscite"].to_list()[y]
-        if y!=0:
+        if y!=-1:
+            vett_anagrafica[i]["Origine"][36]=doc_dict[vett_anagrafica[i]["Sezione"][36]]+" a riga "+str(y+1)
             n_ris="1"
         else:
+            vett_anagrafica[i]["Origine"][36]=doc_dict[vett_anagrafica[i]["Sezione"][36]]
             n_ris="2"
         vett_anagrafica[i]["Risposta "+n_ris][36]="X-"+vett_anagrafica[i]["Risposta "+n_ris][36]
         vett_anagrafica[i]["Livello di Confidence"][36]=confidence[gamma]
-        gamma+=1    
+        gamma+=1   
+        doc_dict.pop(vett_anagrafica[i]["Sezione"][36]) 
 
 
         ####risposta 2.6 Quale è il valore commerciale del suo patrimonio immobiliare?
@@ -503,12 +590,17 @@ def crea_questionario(df,estratto_conto):
                 break
         
         p_imm=estratto_conto["Uscite"].to_list()[y]
-        if p_imm<5000:
+        print("#############################")
+        print(p_imm)
+        print("#############################")
+        if p_imm<5000 or pd.notna(p_imm)==False:
             n_ris="1"
         elif p_imm<10000:
             n_ris="2"
         else:
             n_ris="3"
+        print(n_ris)
+        
         vett_anagrafica[i]["Risposta "+n_ris][37]="X-"+vett_anagrafica[i]["Risposta "+n_ris][37]
         vett_anagrafica[i]["Livello di Confidence"][37]=confidence[gamma]
         gamma+=1
@@ -536,7 +628,7 @@ def crea_questionario(df,estratto_conto):
                 break
         
         stipendio=estratto_conto["Uscite"].to_list()[y]
-        if stipendio==0:
+        if stipendio==0 or pd.notna(stipendio)==False:
             n_ris="1"
         elif stipendio<1000:
             n_ris="2"
@@ -564,18 +656,41 @@ def crea_questionario(df,estratto_conto):
         gamma+=1
         ####risposta 2.10 Quante persone dipendono economicamente da Lei?
         ##GIA' GESTITA
-        
+        if df["N. FAMILIARI A CARICO"][i]==0:
+            n_ris="1"
+        elif df["N. FAMILIARI A CARICO"][i]==1:
+            n_ris="2"
+        elif df["N. FAMILIARI A CARICO"][i]==2:
+            n_ris="2"
+        elif df["N. FAMILIARI A CARICO"][i]==3:
+            n_ris="3"
+        elif df["N. FAMILIARI A CARICO"][i]==4:
+            n_ris="3"
+        else:
+            n_ris="4"
         
         vett_anagrafica[i]["Risposta "+n_ris][41]="X-"+vett_anagrafica[i]["Risposta "+n_ris][41]
         vett_anagrafica[i]["Livello di Confidence"][41]=confidence[gamma]
         
         
-
-
-
+        indice_da_inizio_rimozione = 42  
+        vett_anagrafica[i] = vett_anagrafica[i].drop(index=range(indice_da_inizio_rimozione, len(vett_anagrafica[i])))
+        vett_anagrafica[i].set_index('Sezione', inplace=True)
+        for k in doc_dict.keys():
+            vett_anagrafica[i]["Origine"][k]=doc_dict[k]
+        
         buffer=io.BytesIO()
         
         vett_anagrafica[i].to_excel("2000503 - QUESTIONARIO PF "+nome+cognome+".xlsx")
         vett_anagrafica[i].to_excel(buffer,index=False)
         buffer.seek(0)
         return buffer
+    
+    
+    
+df=pd.read_excel("Anagrafica.xlsx")
+pdf_path="2000503 - QUESTIONARIO PF MarioRossi.pdf"
+df_anagrafica=df.iloc[0]
+estratto_conto=pd.read_excel("EstrattoConto MarioRossi.xlsx")
+df_anagrafica=pd.DataFrame(df_anagrafica).transpose()
+crea_questionario(df_anagrafica,estratto_conto)
