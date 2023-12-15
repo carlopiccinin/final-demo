@@ -71,8 +71,7 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Livello di Confidence"][6]=confidence[gamma]
         gamma+=1
         
-        vett_anagrafica[i]["Risposta "+n_ris][41]="X-"+vett_anagrafica[i]["Risposta "+n_ris][41]
-        vett_anagrafica[i]["Livello di Confidence"][41]=confidence[-1]
+        
         
         
         estratto_conto.columns=estratto_conto.iloc[4]
