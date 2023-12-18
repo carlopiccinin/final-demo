@@ -443,7 +443,7 @@ def crea_questionario(df,estratto_conto):
         else:
             vett_anagrafica[i]["Origine"][28]=doc_dict[vett_anagrafica[i]["Sezione"][28]]
             n_ris="2"
-        print(n_ris)
+      
         vett_anagrafica[i]["Risposta "+n_ris][28]="X-"+vett_anagrafica[i]["Risposta "+n_ris][28]
         vett_anagrafica[i]["Livello di Confidence"][28]=confidence[gamma]
         gamma+=1  
@@ -679,8 +679,8 @@ def crea_questionario(df,estratto_conto):
             n_ris="2"
         elif df["PROFESSIONE"][i]=="Imprenditore settore investimenti":
             n_ris="3"
-
-        vett_anagrafica[i]["Risposta "+n_ris][40]="X-"+vett_anagrafica[i]["Risposta "+n_ris][40]
+        print(vett_anagrafica[i]["Risposta "+n_ris][40])
+        vett_anagrafica[i]["Risposta "+n_ris][40]="X-"+str(vett_anagrafica[i]["Risposta "+n_ris][40])
         vett_anagrafica[i]["Livello di Confidence"][40]=confidence[gamma]
         gamma+=1
         ####risposta 2.10 Quante persone dipendono economicamente da Lei?
