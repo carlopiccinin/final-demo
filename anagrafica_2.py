@@ -78,7 +78,7 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Sezione"]=vett_anagrafica[i]["Sezione"].astype(str)
         vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Origine', value=None)
         
-        vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Descrizione Origine', value=None)
+        vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Record Origine', value=None)
         vett_anagrafica[i].to_excel("prova.xlsx")
         
         vett_anagrafica[i]["Risposta 1"][1]=df["COGNOME"][i]
@@ -194,6 +194,7 @@ def crea_questionario(df,estratto_conto):
         ##Tutte Vero/Falso
         ####risposta 1.6.1
         # Il rendimento di attività a basso rischio potrebbe signiﬁcare la perdita del potere di acquisto derivante dal mancato recupero dell’inﬂazione
+        a=0
         for j in range(len(descrizione)):
                 
                 if (descrizione.iloc[j].lower().find("fondo monetario")>=0):
@@ -221,11 +222,12 @@ def crea_questionario(df,estratto_conto):
         
         ####risposta 1.6.3
         #Strumenti Obbligazionari: L’acquisto di un titolo obbligazionario emesso in una valuta diversa dall’Euro comporta l’esposizione anche al rischio di cambio
+        a=0
         for j in range(len(descrizione)):
                 
                 if (descrizione.iloc[j].lower().find("obbligazioni")>=0 or descrizione.iloc[j].lower().find("btp")>=0):
                     
-                    a=j+1
+                    a=j
                     break
         if a!=0:
             vett_anagrafica[i]["Origine"][15]=doc_dict[vett_anagrafica[i]["Sezione"][15]]+" a riga "+str(a+1)
