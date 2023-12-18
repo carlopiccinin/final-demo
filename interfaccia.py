@@ -5,6 +5,8 @@ from anagrafica_2 import crea_questionario
 import time
 import random
 # Titolo della pagina
+
+st.set_page_config(page_title="Tool di precompilazione questionario MiFID", page_icon="deloitte-logo-symbol.png", layout="centered", initial_sidebar_state="auto")
 st.title("Questionairo MiFID")
 st.subheader("Tool di precompilazione")
 
