@@ -77,6 +77,8 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i].rename(columns={"Unnamed: 1":"Domanda"},inplace=True)
         vett_anagrafica[i]["Sezione"]=vett_anagrafica[i]["Sezione"].astype(str)
         vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Origine', value=None)
+        
+        vett_anagrafica[i].insert(loc=len(vett_anagrafica[i].columns), column='Descrizione Origine', value=None)
         vett_anagrafica[i].to_excel("prova.xlsx")
         
         vett_anagrafica[i]["Risposta 1"][1]=df["COGNOME"][i]
@@ -125,11 +127,12 @@ def crea_questionario(df,estratto_conto):
                 aa=j
                 break
         
-        stipendio=estratto_conto["Entrate"].to_list()[a]
+        
         if a!=0:
             print(vett_anagrafica[i]["Sezione"][8])
             
             vett_anagrafica[i]["Origine"][8]=doc_dict[str(vett_anagrafica[i]["Sezione"][8])]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][8]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][8]=doc_dict[vett_anagrafica[i]["Sezione"][8]]
@@ -138,8 +141,10 @@ def crea_questionario(df,estratto_conto):
         vett_anagrafica[i]["Risposta "+n_ris][8]="X-"+vett_anagrafica[i]["Risposta "+n_ris][8]
         vett_anagrafica[i]["Livello di Confidence"][8]=confidence[gamma]
         gamma+=1
+        stipendio=estratto_conto["Entrate"].to_list()[a]
         if aa!=0:
             vett_anagrafica[i]["Origine"][9]=doc_dict[vett_anagrafica[i]["Sezione"][9]]+" a riga "+str(aa+1)
+            vett_anagrafica[i]["Descrizione Origine"][9]="Descrizione: "+descrizione.iloc[aa]+" Importo: "+str(estratto_conto["Uscite"].to_list()[aa])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][9]=doc_dict[vett_anagrafica[i]["Sezione"][9]]
@@ -175,6 +180,7 @@ def crea_questionario(df,estratto_conto):
                 break
         if a!=0:
             vett_anagrafica[i]["Origine"][12]=doc_dict[vett_anagrafica[i]["Sezione"][12]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][12]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][12]=doc_dict[vett_anagrafica[i]["Sezione"][12]]
@@ -197,6 +203,7 @@ def crea_questionario(df,estratto_conto):
         
         if df["TITOLO DI STUDIO"][i].find("Laurea")>=0 and a!=0:
             vett_anagrafica[i]["Origine"][14]=doc_dict[vett_anagrafica[i]["Sezione"][14]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][14]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
            
             n_ris="1"
             
@@ -222,7 +229,9 @@ def crea_questionario(df,estratto_conto):
                     break
         if a!=0:
             vett_anagrafica[i]["Origine"][15]=doc_dict[vett_anagrafica[i]["Sezione"][15]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][15]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             vett_anagrafica[i]["Origine"][16]=doc_dict[vett_anagrafica[i]["Sezione"][16]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][16]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][15]=doc_dict[vett_anagrafica[i]["Sezione"][15]]
@@ -248,6 +257,7 @@ def crea_questionario(df,estratto_conto):
                     break
         if a!=0:
             vett_anagrafica[i]["Origine"][17]=doc_dict[vett_anagrafica[i]["Sezione"][17]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][17]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][17]=doc_dict[vett_anagrafica[i]["Sezione"][17]]
@@ -266,11 +276,14 @@ def crea_questionario(df,estratto_conto):
                 
                 if (descrizione.iloc[j].lower().find("fidelity")>=0):
                     
-                    a=j+1
+                    a=j
                     break
         if a!=0:
             vett_anagrafica[i]["Origine"][18]=doc_dict[vett_anagrafica[i]["Sezione"][18]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][18]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             vett_anagrafica[i]["Origine"][19]=doc_dict[vett_anagrafica[i]["Sezione"][19]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][19]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
+            
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][18]=doc_dict[vett_anagrafica[i]["Sezione"][18]]
@@ -300,6 +313,7 @@ def crea_questionario(df,estratto_conto):
                     break
         if a!=0:
             vett_anagrafica[i]["Origine"][20]=doc_dict[vett_anagrafica[i]["Sezione"][20]]+" a riga "+str(a+1)
+            vett_anagrafica[i]["Descrizione Origine"][20]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Uscite"].to_list()[a])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][20]=doc_dict[vett_anagrafica[i]["Sezione"][20]]
@@ -340,6 +354,7 @@ def crea_questionario(df,estratto_conto):
         
         if b!=0:
             vett_anagrafica[i]["Origine"][24]=doc_dict[vett_anagrafica[i]["Sezione"][24]]+" a riga "+str(b+1)
+            vett_anagrafica[i]["Descrizione Origine"][24]="Descrizione: "+descrizione.iloc[b]+" Importo: "+str(estratto_conto["Uscite"].to_list()[b])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][24]=doc_dict[vett_anagrafica[i]["Sezione"][24]]
@@ -360,6 +375,7 @@ def crea_questionario(df,estratto_conto):
         
         if c!=0:
             vett_anagrafica[i]["Origine"][25]=doc_dict[vett_anagrafica[i]["Sezione"][25]]+" a riga "+str(c+1)
+            vett_anagrafica[i]["Descrizione Origine"][25]="Descrizione: "+descrizione.iloc[c]+" Importo: "+str(estratto_conto["Uscite"].to_list()[c])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][25]=doc_dict[vett_anagrafica[i]["Sezione"][25]]
@@ -378,6 +394,7 @@ def crea_questionario(df,estratto_conto):
         stipendio=estratto_conto["Entrate"].to_list()[d]
         if d!=0:
             vett_anagrafica[i]["Origine"][26]=doc_dict[vett_anagrafica[i]["Sezione"][26]]+" a riga "+str(d+1)
+            vett_anagrafica[i]["Descrizione Origine"][26]="Descrizione: "+descrizione.iloc[d]+" Importo: "+str(estratto_conto["Uscite"].to_list()[d])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][26]=doc_dict[vett_anagrafica[i]["Sezione"][26]]
@@ -398,6 +415,7 @@ def crea_questionario(df,estratto_conto):
         stipendio=estratto_conto["Entrate"].to_list()[e]
         if e!=0:
             vett_anagrafica[i]["Origine"][27]=doc_dict[vett_anagrafica[i]["Sezione"][27]]+" a riga "+str(e+1)
+            vett_anagrafica[i]["Descrizione Origine"][27]="Descrizione: "+descrizione.iloc[e]+" Importo: "+str(estratto_conto["Uscite"].to_list()[e])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][27]=doc_dict[vett_anagrafica[i]["Sezione"][27]]
@@ -417,6 +435,7 @@ def crea_questionario(df,estratto_conto):
         stipendio=estratto_conto["Entrate"].to_list()[f]
         if f!=0:
             vett_anagrafica[i]["Origine"][28]=doc_dict[vett_anagrafica[i]["Sezione"][28]]+" a riga "+str(f+1)
+            vett_anagrafica[i]["Descrizione Origine"][28]="Descrizione: "+descrizione.iloc[f]+" Importo: "+str(estratto_conto["Uscite"].to_list()[f])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][28]=doc_dict[vett_anagrafica[i]["Sezione"][28]]
@@ -435,6 +454,7 @@ def crea_questionario(df,estratto_conto):
         stipendio=estratto_conto["Entrate"].to_list()[g]
         if  g!=0:
             vett_anagrafica[i]["Origine"][29]=doc_dict[vett_anagrafica[i]["Sezione"][29]]+" a riga "+str(g+1)
+            vett_anagrafica[i]["Descrizione Origine"][29]="Descrizione: "+descrizione.iloc[g]+" Importo: "+str(estratto_conto["Uscite"].to_list()[g])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][29]=doc_dict[vett_anagrafica[i]["Sezione"][29]]
@@ -513,7 +533,13 @@ def crea_questionario(df,estratto_conto):
         else:
             n_ris="4"
         
-        vett_anagrafica[i]["Risposta "+n_ris][33]="X-"+vett_anagrafica[i]["Risposta "+n_ris][33]
+        if a!=0 and pd.notna(a):
+            vett_anagrafica[i]["Risposta "+n_ris][33]="X-"+vett_anagrafica[i]["Risposta "+n_ris][33]
+            vett_anagrafica[i]["Origine"][33]=doc_dict[vett_anagrafica[i]["Sezione"][33]]+" a riga "+str(a+1)
+            doc_dict.pop(vett_anagrafica[i]["Sezione"][33])
+            vett_anagrafica[i]["Descrizione Origine"][33]="Descrizione: "+descrizione.iloc[a]+" Importo: "+str(estratto_conto["Entrate"].to_list()[a])
+        else:
+            vett_anagrafica[i]["Risposta "+n_ris][33]="X-"+vett_anagrafica[i]["Risposta "+n_ris][33]
         vett_anagrafica[i]["Livello di Confidence"][33]=confidence[gamma]
         gamma+=1
 
@@ -571,6 +597,7 @@ def crea_questionario(df,estratto_conto):
         stipendio=estratto_conto["Uscite"].to_list()[y]
         if y!=-1:
             vett_anagrafica[i]["Origine"][36]=doc_dict[vett_anagrafica[i]["Sezione"][36]]+" a riga "+str(y+1)
+            vett_anagrafica[i]["Descrizione Origine"][36]="Descrizione: "+descrizione.iloc[y]+" Importo: "+str(estratto_conto["Uscite"].to_list()[y])
             n_ris="1"
         else:
             vett_anagrafica[i]["Origine"][36]=doc_dict[vett_anagrafica[i]["Sezione"][36]]
